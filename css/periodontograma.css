@@ -1,0 +1,78 @@
+* {
+    box-sizing:border-box;
+  }
+  
+.colinput {
+    width: 45px; !important;
+}
+
+.colinputuca {
+    width: 45px; !important;
+}
+
+.colinputps {
+    width: 45px; !important;
+}
+
+.colinputfurcamm {
+    width: 45px; !important;
+}
+
+.colinputausente {
+    width: 45px; !important;
+}
+
+
+
+.filaNumero {
+    width: 120px;
+    text-align: center;
+}
+
+.filaNombre {
+    width: 120px;
+    text-align: left;
+}
+
+table {
+    overflow: hidden;
+    display:inline-block;
+  }
+  
+  td, th {
+      border: 1px solid #999;
+      padding: 5px;
+      position: relative;
+  }
+  
+  th {
+    background-color:#1197EB;
+    color: rgb(255, 255, 255);
+    border: 1px solid #ffffff;
+}
+  
+
+  //Row
+  td:hover::before { 
+      background-color: #eee;
+      content: '';  
+      height: 100%;
+      left: -5000px;
+      position: absolute;  
+      top: 0;
+      width: 10000px;   
+      z-index: -2;        
+  }
+  
+  //Column
+  td:hover::after { 
+      background-color: #ffa;
+      content: '';  
+      height: 10000px;    
+      left: 0;
+      position: absolute;  
+      top: -5000px;
+      width: 100%;
+      z-index: -1;        
+  }
+  
