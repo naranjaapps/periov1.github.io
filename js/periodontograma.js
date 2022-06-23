@@ -1,45 +1,62 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var Posicion;
 (function (Posicion) {
     Posicion[Posicion["Superior"] = 1] = "Superior";
     Posicion[Posicion["Inferior"] = 2] = "Inferior";
 })(Posicion || (Posicion = {}));
-class Rectangle {
-    constructor(x, y, width, height) {
+var Rectangle = /** @class */ (function () {
+    function Rectangle(x, y, width, height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
     }
-    contains(x, y) {
+    Rectangle.prototype.contains = function (x, y) {
         return this.x <= x && x <= this.x + this.width &&
             this.y <= y && y <= this.y + this.height;
-    }
-}
-class Linea {
-    constructor(x1, y1, x2, y2) {
+    };
+    return Rectangle;
+}());
+var Linea = /** @class */ (function () {
+    function Linea(x1, y1, x2, y2) {
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
     }
-    redraw(context) {
+    Linea.prototype.redraw = function (context) {
         context.beginPath();
         context.moveTo(this.x1, this.y1);
         context.lineTo(this.x2, this.y2);
         context.lineWidth = 0.2;
         context.stroke();
+    };
+    return Linea;
+}());
+var Resultado = /** @class */ (function (_super) {
+    __extends(Resultado, _super);
+    function Resultado(tipo, x, y, width, height) {
+        var _this = _super.call(this, x, y, width, height) || this;
+        _this.valor = "14";
+        _this.debug = true;
+        _this.tipo = tipo;
+        return _this;
     }
-}
-class Resultado extends Rectangle {
-    constructor(tipo, x, y, width, height) {
-        super(x, y, width, height);
-        this.valor = "14";
-        this.debug = true;
-        this.tipo = tipo;
-    }
-    redraw(context) {
-        let color = "#1197EB";
+    Resultado.prototype.redraw = function (context) {
+        var color = "#1197EB";
         if (this.debug) {
             if (this.tipo == Tipo.Pieza) {
                 context.beginPath();
@@ -58,10 +75,10 @@ class Resultado extends Rectangle {
         }
         context.fillStyle = color;
         this.drawTextInBox(context, this.valor, "Arial", this.x + 2, this.y + 2, this.width - 4, this.height - 4);
-    }
-    drawTextInBox(context, txt, font, x, y, w, h) {
-        let fontHeight = 8;
-        let hMargin = 2;
+    };
+    Resultado.prototype.drawTextInBox = function (context, txt, font, x, y, w, h) {
+        var fontHeight = 8;
+        var hMargin = 2;
         context.font = fontHeight + 'px ' + font;
         context.textAlign = 'left';
         context.textBaseline = 'top';
@@ -71,18 +88,19 @@ class Resultado extends Rectangle {
         else {
             context.fillStyle = "#1E68BC";
         }
-        let txtWidth = context.measureText(txt).width + 2 * hMargin;
+        var txtWidth = context.measureText(txt).width + 2 * hMargin;
         context.save();
         context.translate(x + w / 2, y);
         context.scale(w / txtWidth, h / fontHeight);
         context.translate(hMargin, 0);
         context.fillText(txt, -txtWidth / 2, 0);
         context.restore();
-    }
-    setValor(valor) {
+    };
+    Resultado.prototype.setValor = function (valor) {
         this.valor = valor;
-    }
-}
+    };
+    return Resultado;
+}(Rectangle));
 var Tipo;
 (function (Tipo) {
     Tipo[Tipo["Pieza"] = 1] = "Pieza";
@@ -95,8 +113,9 @@ var Tipo;
     Tipo[Tipo["Ps"] = 8] = "Ps";
     Tipo[Tipo["UCA"] = 9] = "UCA";
 })(Tipo || (Tipo = {}));
-class Resultados {
-    constructor(tipo, cantidad, border = true) {
+var Resultados = /** @class */ (function () {
+    function Resultados(tipo, cantidad, border) {
+        if (border === void 0) { border = true; }
         this.cantidad = 3;
         this.border = true;
         this.debug = true;
@@ -105,33 +124,34 @@ class Resultados {
         this.border = border;
         this.tipo = tipo;
     }
-    setArea(x, y, width, height) {
-        let ancho = width / this.cantidad;
-        for (let v = 0; v < this.cantidad; v++) {
-            let area = new Resultado(this.tipo, x + (v * ancho), y, ancho, height);
+    Resultados.prototype.setArea = function (x, y, width, height) {
+        var ancho = width / this.cantidad;
+        for (var v = 0; v < this.cantidad; v++) {
+            var area = new Resultado(this.tipo, x + (v * ancho), y, ancho, height);
             this._valores.push(area);
         }
-    }
-    setValor(valor) {
+    };
+    Resultados.prototype.setValor = function (valor) {
         this._valores[0].setValor(valor);
-    }
-    setValores(value) {
-        for (let a = 0; a < this._valores.length; a++) {
-            let area = this._valores[a];
+    };
+    Resultados.prototype.setValores = function (value) {
+        for (var a = 0; a < this._valores.length; a++) {
+            var area = this._valores[a];
             area.setValor(value[a]);
         }
-    }
-    redraw(context) {
+    };
+    Resultados.prototype.redraw = function (context) {
         if (this.border) {
-            for (let a = 0; a < this._valores.length; a++) {
-                let valor = this._valores[a];
+            for (var a = 0; a < this._valores.length; a++) {
+                var valor = this._valores[a];
                 valor.redraw(context);
             }
         }
-    }
-}
-class Datos {
-    constructor(numero) {
+    };
+    return Resultados;
+}());
+var Datos = /** @class */ (function () {
+    function Datos(numero) {
         this.numero = "16";
         this.ausente = false;
         this.faltaEQ = false;
@@ -148,9 +168,9 @@ class Datos {
         this.numero = numero;
         this._area = new Rectangle(0, 0, 0, 1);
     }
-    nic() {
-        let nic = ["", "", ""];
-        for (let index = 0; index < nic.length; index++) {
+    Datos.prototype.nic = function () {
+        var nic = ["", "", ""];
+        for (var index = 0; index < nic.length; index++) {
             if (this.ps[index] != "" || this.uca_mg[index] != "") {
                 if (this.ps[index] != "" || this.uca_mg[index] != "")
                     nic[index] = (Number(this.ps[index]) + Number(this.uca_mg[index])).toString();
@@ -161,40 +181,40 @@ class Datos {
             }
         }
         return nic;
-    }
-    setArea(x, y, width, height) {
+    };
+    Datos.prototype.setArea = function (x, y, width, height) {
         this._area = new Rectangle(x, y, width, height);
-    }
-    redraw(context) {
+    };
+    Datos.prototype.redraw = function (context) {
         if (this.debug) {
             context.beginPath();
             context.rect(this._area.x, this._area.y, this._area.width, this._area.height);
             context.stroke();
         }
-    }
-    generarAusenteHTML(filaTabla) {
-        let celda = document.createElement('TD');
+    };
+    Datos.prototype.generarAusenteHTML = function (filaTabla) {
+        var celda = document.createElement('TD');
         celda.setAttribute("colspan", "3");
         celda.setAttribute("class", "colinput");
-        let ausente = document.createElement('INPUT');
+        var ausente = document.createElement('INPUT');
         ausente.setAttribute("type", "checkbox");
         ausente.checked = this.ausente;
         ausente.id = "ausente" + this.numero.toString();
         ausente.setAttribute("class", "colinputausente");
         celda.appendChild(ausente);
         filaTabla.appendChild(celda);
-    }
-    generarMovilidadHTML(filaTabla) {
-        let celda = document.createElement('TD');
+    };
+    Datos.prototype.generarMovilidadHTML = function (filaTabla) {
+        var celda = document.createElement('TD');
         celda.setAttribute("colspan", "3");
-        let selectList = document.createElement("select");
+        var selectList = document.createElement("select");
         selectList.id = "movilidad" + this.numero.toString();
-        let optVacio = document.createElement('option');
+        var optVacio = document.createElement('option');
         optVacio.value = "";
         optVacio.innerHTML = "";
         selectList.appendChild(optVacio);
-        for (let i = 1; i <= 3; i++) {
-            let opt = document.createElement('option');
+        for (var i = 1; i <= 3; i++) {
+            var opt = document.createElement('option');
             opt.value = i.toString();
             opt.innerHTML = i.toString();
             opt.selected = this.movilidad.toString() == i.toString();
@@ -204,17 +224,17 @@ class Datos {
         //if (this.ausente) selectList.setAttribute("hidden", this.ausente ? "true" : "false");
         celda.appendChild(selectList);
         filaTabla.appendChild(celda);
-    }
-    generarFaltaEQHTML(filaTabla) {
-        let celda = document.createElement('TD');
+    };
+    Datos.prototype.generarFaltaEQHTML = function (filaTabla) {
+        var celda = document.createElement('TD');
         celda.setAttribute("colspan", "3");
-        let selectList = document.createElement("select");
+        var selectList = document.createElement("select");
         selectList.id = "faltaEQ" + this.numero.toString();
-        let optVacio = document.createElement('option');
+        var optVacio = document.createElement('option');
         optVacio.value = "";
         optVacio.innerHTML = "";
         selectList.appendChild(optVacio);
-        let optAsterisco = document.createElement('option');
+        var optAsterisco = document.createElement('option');
         optAsterisco.value = "*";
         optAsterisco.innerHTML = "*";
         optAsterisco.selected = this.faltaEQ;
@@ -223,28 +243,28 @@ class Datos {
         //if (this.ausente) selectList.setAttribute("hidden", this.ausente ? "true" : "false");
         celda.appendChild(selectList);
         filaTabla.appendChild(celda);
-    }
-    generarFurcaClaseHTML(filaTabla) {
-        for (let f = 0; f < this.furca_clase.length; f++) {
-            let furca = this.furca_clase[f];
-            let celda = document.createElement('TD');
-            let selectList = document.createElement("select");
+    };
+    Datos.prototype.generarFurcaClaseHTML = function (filaTabla) {
+        for (var f = 0; f < this.furca_clase.length; f++) {
+            var furca = this.furca_clase[f];
+            var celda = document.createElement('TD');
+            var selectList = document.createElement("select");
             selectList.id = "furcaClase" + this.numero.toString() + "_" + f.toString();
-            let optVacio = document.createElement('option');
+            var optVacio = document.createElement('option');
             optVacio.value = "";
             optVacio.innerHTML = "";
             selectList.appendChild(optVacio);
-            let optI = document.createElement('option');
+            var optI = document.createElement('option');
             optI.value = "I";
             optI.innerHTML = "I";
             optI.selected = furca == optI.value;
             selectList.appendChild(optI);
-            let optII = document.createElement('option');
+            var optII = document.createElement('option');
             optII.value = "II";
             optII.innerHTML = "II";
             optII.selected = furca == optII.value;
             selectList.appendChild(optII);
-            let optIII = document.createElement('option');
+            var optIII = document.createElement('option');
             optIII.value = "III";
             optIII.innerHTML = "III";
             optIII.selected = furca == optIII.value;
@@ -254,12 +274,12 @@ class Datos {
             celda.appendChild(selectList);
             filaTabla.appendChild(celda);
         }
-    }
-    generarFurcaMMHTML(filaTabla) {
-        for (let f = 0; f < this.furca_clase.length; f++) {
-            let furca = this.furca_mm[f];
-            let celda = document.createElement('TD');
-            let inputMM = document.createElement('INPUT');
+    };
+    Datos.prototype.generarFurcaMMHTML = function (filaTabla) {
+        for (var f = 0; f < this.furca_clase.length; f++) {
+            var furca = this.furca_mm[f];
+            var celda = document.createElement('TD');
+            var inputMM = document.createElement('INPUT');
             inputMM.setAttribute("type", "number");
             inputMM.setAttribute("min", "0");
             inputMM.setAttribute("max", "10");
@@ -270,17 +290,17 @@ class Datos {
             celda.appendChild(inputMM);
             filaTabla.appendChild(celda);
         }
-    }
-    generarSupuracionHTML(filaTabla) {
-        let celda = document.createElement('TD');
+    };
+    Datos.prototype.generarSupuracionHTML = function (filaTabla) {
+        var celda = document.createElement('TD');
         celda.setAttribute("colspan", "3");
-        let selectList = document.createElement("select");
+        var selectList = document.createElement("select");
         selectList.id = "supuracion" + this.numero.toString();
-        let optVacio = document.createElement('option');
+        var optVacio = document.createElement('option');
         optVacio.value = "";
         optVacio.innerHTML = "";
         selectList.appendChild(optVacio);
-        let optAsterisco = document.createElement('option');
+        var optAsterisco = document.createElement('option');
         optAsterisco.value = "S";
         optAsterisco.innerHTML = "S";
         optAsterisco.selected = this.supuracion;
@@ -289,13 +309,13 @@ class Datos {
         //if (this.ausente) selectList.setAttribute("hidden", this.ausente ? "true" : "false");
         celda.appendChild(selectList);
         filaTabla.appendChild(celda);
-    }
-    generarNicHTML(filaTabla) {
-        let values = this.nic();
-        for (let f = 0; f < values.length; f++) {
-            let nic = values[f];
-            let celda = document.createElement('TD');
-            let labelNIC = document.createElement('LABEL');
+    };
+    Datos.prototype.generarNicHTML = function (filaTabla) {
+        var values = this.nic();
+        for (var f = 0; f < values.length; f++) {
+            var nic = values[f];
+            var celda = document.createElement('TD');
+            var labelNIC = document.createElement('LABEL');
             labelNIC.innerHTML = nic;
             labelNIC.id = "nic" + this.numero.toString() + "_" + f.toString();
             labelNIC.setAttribute("class", "colinput");
@@ -303,12 +323,12 @@ class Datos {
             celda.appendChild(labelNIC);
             filaTabla.appendChild(celda);
         }
-    }
-    generarPsHTML(filaTabla) {
-        for (let f = 0; f < this.ps.length; f++) {
-            let ps = this.ps[f];
-            let celda = document.createElement('TD');
-            let inputMM = document.createElement('INPUT');
+    };
+    Datos.prototype.generarPsHTML = function (filaTabla) {
+        for (var f = 0; f < this.ps.length; f++) {
+            var ps = this.ps[f];
+            var celda = document.createElement('TD');
+            var inputMM = document.createElement('INPUT');
             inputMM.setAttribute("type", "number");
             inputMM.setAttribute("min", "0");
             inputMM.setAttribute("max", "20");
@@ -319,43 +339,42 @@ class Datos {
             celda.appendChild(inputMM);
             filaTabla.appendChild(celda);
         }
-    }
-    generarUcaMGHTML(filaTabla) {
-        for (let f = 0; f < this.uca_mg.length; f++) {
-            let uca_mg = this.uca_mg[f];
-            let celda = document.createElement('TD');
-            let inputMG = document.createElement('INPUT');
+    };
+    Datos.prototype.generarUcaMGHTML = function (filaTabla) {
+        for (var f = 0; f < this.uca_mg.length; f++) {
+            var uca_mg = this.uca_mg[f];
+            var celda = document.createElement('TD');
+            var inputMG = document.createElement('INPUT');
             inputMG.setAttribute("type", "number");
             inputMG.setAttribute("min", "-10");
             inputMG.setAttribute("max", "10");
             inputMG.setAttribute("value", uca_mg);
             inputMG.id = "uca_mg" + this.numero.toString() + "_" + f.toString();
             inputMG.setAttribute("class", "colinputuca");
-            //if (this.ausente) inputMG.setAttribute("hidden", this.ausente ? "true" : "false");
             celda.appendChild(inputMG);
             filaTabla.appendChild(celda);
         }
-    }
-    setValueFromTableHtml() {
-        let ausente = document.getElementById('ausente' + this.numero);
+    };
+    Datos.prototype.setValueFromTableHtml = function () {
+        var ausente = document.getElementById('ausente' + this.numero);
         this.ausente = ausente.checked;
-        let movilidad = document.getElementById('movilidad' + this.numero);
+        var movilidad = document.getElementById('movilidad' + this.numero);
         this.movilidad = movilidad.value;
-        let faltaEQ = document.getElementById('faltaEQ' + this.numero);
+        var faltaEQ = document.getElementById('faltaEQ' + this.numero);
         this.faltaEQ = faltaEQ.value == "*" ? true : false;
-        let furca_1 = document.getElementById('furcaClase' + this.numero + "_0");
-        let furca_2 = document.getElementById('furcaClase' + this.numero + "_1");
-        let furca_3 = document.getElementById('furcaClase' + this.numero + "_2");
+        var furca_1 = document.getElementById('furcaClase' + this.numero + "_0");
+        var furca_2 = document.getElementById('furcaClase' + this.numero + "_1");
+        var furca_3 = document.getElementById('furcaClase' + this.numero + "_2");
         this.furca_clase[0] = furca_1.value;
         this.furca_clase[1] = furca_2.value;
         this.furca_clase[2] = furca_3.value;
-        let furca_1_mm = document.getElementById('furcaMM' + this.numero + "_0");
-        let furca_2_mm = document.getElementById('furcaMM' + this.numero + "_1");
-        let furca_3_mm = document.getElementById('furcaMM' + this.numero + "_2");
+        var furca_1_mm = document.getElementById('furcaMM' + this.numero + "_0");
+        var furca_2_mm = document.getElementById('furcaMM' + this.numero + "_1");
+        var furca_3_mm = document.getElementById('furcaMM' + this.numero + "_2");
         this.furca_mm[0] = furca_1_mm.value;
         this.furca_mm[1] = furca_2_mm.value;
         this.furca_mm[2] = furca_3_mm.value;
-        let supuracion = document.getElementById('supuracion' + this.numero);
+        var supuracion = document.getElementById('supuracion' + this.numero);
         this.supuracion = supuracion.value == "S" ? true : false;
         // let nic_1 = document.getElementById('nic' + this.numero + "_0") as HTMLInputElement;
         // let nic_2 = document.getElementById('nic' + this.numero + "_1") as HTMLInputElement;
@@ -363,51 +382,54 @@ class Datos {
         // this.nic[0] = nic_1.value;
         // this.nic[1] = nic_2.value;
         // this.nic[2] = nic_3.value;
-        let ps_1 = document.getElementById('ps' + this.numero + "_0");
-        let ps_2 = document.getElementById('ps' + this.numero + "_1");
-        let ps_3 = document.getElementById('ps' + this.numero + "_2");
+        var ps_1 = document.getElementById('ps' + this.numero + "_0");
+        var ps_2 = document.getElementById('ps' + this.numero + "_1");
+        var ps_3 = document.getElementById('ps' + this.numero + "_2");
         this.ps[0] = ps_1.value;
         this.ps[1] = ps_2.value;
         this.ps[2] = ps_3.value;
-        let uca_mg_1 = document.getElementById('uca_mg' + this.numero + "_0");
-        let uca_mg_2 = document.getElementById('uca_mg' + this.numero + "_1");
-        let uca_mg_3 = document.getElementById('uca_mg' + this.numero + "_2");
+        var uca_mg_1 = document.getElementById('uca_mg' + this.numero + "_0");
+        var uca_mg_2 = document.getElementById('uca_mg' + this.numero + "_1");
+        var uca_mg_3 = document.getElementById('uca_mg' + this.numero + "_2");
         this.uca_mg[0] = uca_mg_1.value;
         this.uca_mg[1] = uca_mg_2.value;
         this.uca_mg[2] = uca_mg_3.value;
+    };
+    return Datos;
+}());
+var AreaDatos = /** @class */ (function (_super) {
+    __extends(AreaDatos, _super);
+    function AreaDatos(numero, posicion, x, y, width, height) {
+        var _this = _super.call(this, x, y, width, height) || this;
+        _this.debug = true;
+        _this.datos = new Datos(numero.toString());
+        _this._resultados = [];
+        _this.numero = numero;
+        _this.posicion = posicion;
+        return _this;
     }
-}
-class AreaDatos extends Rectangle {
-    constructor(numero, posicion, x, y, width, height) {
-        super(x, y, width, height);
-        this.debug = true;
-        this.datos = new Datos(numero.toString());
-        this._resultados = [];
-        this.numero = numero;
-        this.posicion = posicion;
-    }
-    calcularSecciones() {
-        let numero = new Resultados(Tipo.Pieza, 1);
+    AreaDatos.prototype.calcularSecciones = function () {
+        var numero = new Resultados(Tipo.Pieza, 1);
         this._resultados.push(numero);
-        let movilidad = new Resultados(Tipo.Movilidad, 1);
+        var movilidad = new Resultados(Tipo.Movilidad, 1);
         this._resultados.push(movilidad);
-        let faltaEQ = new Resultados(Tipo.FaltaEQ, 1);
+        var faltaEQ = new Resultados(Tipo.FaltaEQ, 1);
         this._resultados.push(faltaEQ);
-        let furca_clase = new Resultados(Tipo.furcaClase, 3);
+        var furca_clase = new Resultados(Tipo.furcaClase, 3);
         this._resultados.push(furca_clase);
-        let furca_mm = new Resultados(Tipo.furcaMM, 3);
+        var furca_mm = new Resultados(Tipo.furcaMM, 3);
         this._resultados.push(furca_mm);
-        let supuracion = new Resultados(Tipo.Supuracion, 1);
+        var supuracion = new Resultados(Tipo.Supuracion, 1);
         this._resultados.push(supuracion);
-        let nic = new Resultados(Tipo.Nic, 3);
+        var nic = new Resultados(Tipo.Nic, 3);
         this._resultados.push(nic);
-        let ps = new Resultados(Tipo.Ps, 3);
+        var ps = new Resultados(Tipo.Ps, 3);
         this._resultados.push(ps);
-        let uca_mg = new Resultados(Tipo.UCA, 3);
+        var uca_mg = new Resultados(Tipo.UCA, 3);
         this._resultados.push(uca_mg);
-        let alto = this.height / this._resultados.length;
-        for (let r = 0; r < this._resultados.length; r++) {
-            let resultado = this._resultados[r];
+        var alto = this.height / this._resultados.length;
+        for (var r = 0; r < this._resultados.length; r++) {
+            var resultado = this._resultados[r];
             if (this.posicion == Posicion.Superior) {
                 resultado.setArea(this.x, this.y + (r * alto), this.width, alto);
             }
@@ -424,8 +446,8 @@ class AreaDatos extends Rectangle {
         nic.setValores(this.datos.nic());
         ps.setValores(this.datos.ps);
         uca_mg.setValores(this.datos.uca_mg);
-    }
-    updateValues() {
+    };
+    AreaDatos.prototype.updateValues = function () {
         this._resultados[1].setValor(this.datos.movilidad);
         this._resultados[2].setValor(this.datos.faltaEQ ? "*" : "");
         this._resultados[3].setValores(this.datos.furca_clase);
@@ -434,32 +456,35 @@ class AreaDatos extends Rectangle {
         this._resultados[6].setValores(this.datos.nic());
         this._resultados[7].setValores(this.datos.ps);
         this._resultados[8].setValores(this.datos.uca_mg);
-    }
-    redraw(context) {
-        for (let r = 0; r < this._resultados.length; r++) {
-            let resultado = this._resultados[r];
+    };
+    AreaDatos.prototype.redraw = function (context, ausente) {
+        for (var r = 0; r < this._resultados.length; r++) {
+            var resultado = this._resultados[r];
             if (r == 0)
                 resultado.redraw(context);
-            else if (!this.datos.ausente)
+            else if (!ausente)
                 resultado.redraw(context);
         }
+    };
+    return AreaDatos;
+}(Rectangle));
+var AreaGrafico = /** @class */ (function (_super) {
+    __extends(AreaGrafico, _super);
+    function AreaGrafico(numero, posicion, x, y, width, height) {
+        var _this = _super.call(this, x, y, width, height) || this;
+        _this.debug = true;
+        _this._ps = [0, 0, 0];
+        _this._mg = [0, 0, 0];
+        _this.datos = new Datos(numero.toString());
+        _this._lineas = [];
+        _this.numero = numero;
+        _this.posicion = posicion;
+        return _this;
     }
-}
-class AreaGrafico extends Rectangle {
-    constructor(numero, posicion, x, y, width, height) {
-        super(x, y, width, height);
-        this.debug = true;
-        this._ps = [0, 0, 0];
-        this._mg = [0, 0, 0];
-        this.datos = new Datos(numero.toString());
-        this._lineas = [];
-        this.numero = numero;
-        this.posicion = posicion;
-    }
-    calcularSecciones() {
-        let mitad = this.height / 2;
-        let altolinea = mitad / 20;
-        for (let l = 0; l < 20; l++) {
+    AreaGrafico.prototype.calcularSecciones = function () {
+        var mitad = this.height / 2;
+        var altolinea = mitad / 20;
+        for (var l = 0; l < 20; l++) {
             if (this.posicion == Posicion.Superior) {
                 this._lineas.push(new Linea(this.x, this.y + (l * altolinea), this.x + this.width, this.y + (l * altolinea)));
             }
@@ -467,30 +492,50 @@ class AreaGrafico extends Rectangle {
                 this._lineas.push(new Linea(this.x, this.y + mitad + (l * altolinea), this.x + this.width, this.y + mitad + (l * altolinea)));
             }
         }
-    }
-    setMargenGingival() {
-    }
-    setProfundidadSondaje() {
-    }
-    redraw(context) {
+    };
+    AreaGrafico.prototype.setMargenGingival = function () {
+    };
+    AreaGrafico.prototype.setProfundidadSondaje = function () {
+    };
+    AreaGrafico.prototype.redraw = function (context, ausente) {
+        var _this = this;
         if (this.debug) {
-            let d = new Image();
+            var d_1 = new Image();
             if (this.posicion == Posicion.Superior)
-                d.src = 'img3/' + this.numero + '.png';
+                d_1.src = 'img3/' + this.numero + '.png';
             else
-                d.src = 'img3/' + this.numero + 'b.png';
-            d.onload = () => {
-                context.drawImage(d, this.x, this.y, this.width, this.height);
-                for (let r = 0; r < this._lineas.length; r++) {
-                    let linea = this._lineas[r];
+                d_1.src = 'img3/' + this.numero + 'b.png';
+            d_1.onload = function () {
+                context.drawImage(d_1, _this.x, _this.y, _this.width, _this.height);
+                for (var r = 0; r < _this._lineas.length; r++) {
+                    var linea = _this._lineas[r];
                     linea.redraw(context);
+                }
+                if (ausente) {
+                    // context.clearRect(this.x, this.y, this.width, this.height);
+                    // context.fillStyle = "white";
+                    // context.fillRect( this.x, this.y, this.width, this.height);     
+                    // context.stroke(); 
+                    context.beginPath();
+                    context.moveTo(_this.x, _this.y);
+                    context.strokeStyle = "black";
+                    context.lineWidth = 2;
+                    context.lineTo(_this.x + _this.width, _this.y + _this.height);
+                    context.stroke();
+                    context.beginPath();
+                    context.moveTo(_this.x + _this.width, _this.y);
+                    context.strokeStyle = "black";
+                    context.lineWidth = 2;
+                    context.lineTo(_this.x, _this.y + _this.height);
+                    context.stroke();
                 }
             };
         }
-    }
-}
-class Diente {
-    constructor(numero, posicion) {
+    };
+    return AreaGrafico;
+}(Rectangle));
+var Diente = /** @class */ (function () {
+    function Diente(numero, posicion) {
         this.ausente = false;
         this.debug = true;
         this.numero = numero;
@@ -501,15 +546,18 @@ class Diente {
         this._areaDatos = new AreaDatos(this.numero, this.posicion, 0, 0, 0, 1);
         this._areaGrafico = new AreaGrafico(this.numero, this.posicion, 0, 0, 0, 1);
     }
-    get datos() {
-        return this._areaDatos.datos;
-    }
-    updateValues() {
-        console.log(this);
+    Object.defineProperty(Diente.prototype, "datos", {
+        get: function () {
+            return this._areaDatos.datos;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Diente.prototype.updateValues = function () {
         this._areaDatos.updateValues();
-    }
-    setArea(x, y, width, height) {
-        let alto = height / 2;
+    };
+    Diente.prototype.setArea = function (x, y, width, height) {
+        var alto = height / 2;
         if (this.posicion == Posicion.Superior) {
             this._areaDatos = new AreaDatos(this.numero, this.posicion, x, y, width, alto);
             this._areaGrafico = new AreaGrafico(this.numero, this.posicion, x, y + alto, width, alto);
@@ -520,71 +568,150 @@ class Diente {
         }
         this._areaDatos.calcularSecciones();
         this._areaGrafico.calcularSecciones();
-    }
-    redraw(context) {
-        this._areaDatos.redraw(context);
-        if (!this.ausente) {
-            this._areaGrafico.redraw(context);
-        }
-    }
-    getMargenGenginval() {
-        let resultado = [];
-        let datos = this._areaDatos.datos.uca_mg;
-        for (let a = 0; a < datos.length; a++) {
-            let valor = datos[a] == "" ? 0 : Number(datos[a]);
+    };
+    Diente.prototype.redraw = function (context) {
+        this._areaDatos.redraw(context, this.ausente);
+        this._areaGrafico.redraw(context, this.ausente);
+    };
+    Diente.prototype.getMargenGenginval = function () {
+        var resultado = [];
+        var datos = this._areaDatos.datos.uca_mg;
+        for (var a = 0; a < datos.length; a++) {
+            var valor = datos[a] == "" ? 0 : Number(datos[a]);
+            if (this.ausente)
+                valor = 0;
             resultado.push(valor);
         }
         return resultado;
-    }
-    getProfundidadSondaje() {
-        let resultado = [];
-        let datos = this._areaDatos.datos.ps;
-        for (let a = 0; a < datos.length; a++) {
-            let valor = datos[a] == "" ? 0 : Number(datos[a]);
+    };
+    Diente.prototype.getProfundidadSondaje = function () {
+        var resultado = [];
+        var datos = this._areaDatos.datos.ps;
+        for (var a = 0; a < datos.length; a++) {
+            var valor = datos[a] == "" ? 0 : Number(datos[a]);
+            if (this.ausente)
+                valor = 0;
             resultado.push(valor);
         }
         return resultado;
+    };
+    return Diente;
+}());
+var Area = /** @class */ (function (_super) {
+    __extends(Area, _super);
+    function Area(id, x, y, width, height) {
+        var _this = _super.call(this, x, y, width, height) || this;
+        _this.debug = true;
+        _this.id = id;
+        _this.dientes = [];
+        return _this;
     }
-}
-class Area extends Rectangle {
-    constructor(x, y, width, height) {
-        super(x, y, width, height);
-        this.debug = true;
-        this.dientes = [];
-    }
-    calcularSecciones() {
-        let ancho = this.width / this.dientes.length;
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
-            let newX = this.x + (d * ancho);
+    Area.prototype.setValores = function (objs) {
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
+            for (var a = 0; a < objs.length; a++) {
+                var obj = objs[a];
+                if (diente.numero.toString() == obj.diente && this.id.toString() == obj.area) {
+                    diente.ausente = obj.ausente;
+                    diente.datos.ausente = obj.ausente;
+                    diente.datos.faltaEQ = obj.faltaEQ;
+                    diente.datos.movilidad = obj.movilidad;
+                    diente.datos.furca_clase[0] = obj.furca_clase1;
+                    diente.datos.furca_clase[1] = obj.furca_clase2;
+                    diente.datos.furca_clase[2] = obj.furca_clase3;
+                    diente.datos.supuracion = obj.supuracion;
+                    diente.datos.furca_mm[0] = obj.furca_mm1;
+                    diente.datos.furca_mm[1] = obj.furca_mm2;
+                    diente.datos.furca_mm[2] = obj.furca_mm3;
+                    diente.datos.ps[0] = obj.ps1;
+                    diente.datos.ps[1] = obj.ps2;
+                    diente.datos.ps[2] = obj.ps3;
+                    diente.updateValues();
+                    break;
+                }
+            }
+        }
+    };
+    Area.prototype.getValores = function () {
+        var valores = "";
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
+            if (valores.length > 0)
+                valores += ", ";
+            valores += "{";
+            valores += "\"area\" : " + this.id.toString();
+            valores += ", ";
+            valores += "\"diente\" : " + diente.numero.toString();
+            valores += ", ";
+            valores += "\"ausente\" : " + (diente.datos.ausente ? "true" : "false");
+            valores += ", ";
+            valores += "\"faltaEQ\" : " + (diente.datos.faltaEQ ? "true" : "false");
+            valores += ", ";
+            valores += "\"movilidad\" : \"" + diente.datos.movilidad + "\"";
+            valores += ", ";
+            valores += "\"furca_clase1\" : \"" + diente.datos.furca_clase[0] + "\"";
+            valores += ", ";
+            valores += "\"furca_clase2\" : \"" + diente.datos.furca_clase[1] + "\"";
+            valores += ", ";
+            valores += "\"furca_clase3\" : \"" + diente.datos.furca_clase[2] + "\"";
+            valores += ", ";
+            valores += "\"furca_mm1\" : \"" + diente.datos.furca_mm[0] + "\"";
+            valores += ", ";
+            valores += "\"furca_mm2\" : \"" + diente.datos.furca_mm[1] + "\"";
+            valores += ", ";
+            valores += "\"furca_mm3\" : \"" + diente.datos.furca_mm[2] + "\"";
+            valores += ", ";
+            valores += "\"supuracion\" : " + (diente.datos.supuracion ? "true" : "false");
+            valores += ", ";
+            valores += "\"ps1\" : \"" + diente.datos.ps[0] + "\"";
+            valores += ", ";
+            valores += "\"ps2\" : \"" + diente.datos.ps[1] + "\"";
+            valores += ", ";
+            valores += "\"ps3\" : \"" + diente.datos.ps[2] + "\"";
+            valores += ", ";
+            valores += "\"uca_mg1\" : \"" + diente.datos.uca_mg[0] + "\"";
+            valores += ", ";
+            valores += "\"uca_mg2\" : \"" + diente.datos.uca_mg[1] + "\"";
+            valores += ", ";
+            valores += "\"uca_mg3\" : \"" + diente.datos.uca_mg[2] + "\"";
+            valores += "}";
+        }
+        return valores;
+    };
+    Area.prototype.calcularSecciones = function () {
+        var ancho = this.width / this.dientes.length;
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
+            var newX = this.x + (d * ancho);
             diente.setArea(newX, this.y, ancho, this.height);
         }
-    }
-    redraw(context) {
+    };
+    Area.prototype.redraw = function (context) {
+        var _this = this;
         if (this.debug) {
-            for (let r = 0; r < this.dientes.length; r++) {
-                let diente = this.dientes[r];
+            for (var r = 0; r < this.dientes.length; r++) {
+                var diente = this.dientes[r];
                 diente.redraw(context);
             }
-            setTimeout(() => {
-                let posicion = this.dientes[0].posicion;
-                let mitad_h = this.height / 2;
-                let base_y = posicion == Posicion.Superior ? this.y + mitad_h + mitad_h / 2 : this.y + mitad_h / 2;
-                let ancho = (this.width / this.dientes.length) / 3;
-                let mitad_ancho = ancho / 2;
-                let alto_punto = mitad_h / 40;
+            setTimeout(function () {
+                var posicion = _this.dientes[0].posicion;
+                var mitad_h = _this.height / 2;
+                var base_y = posicion == Posicion.Superior ? _this.y + mitad_h + mitad_h / 2 : _this.y + mitad_h / 2;
+                var ancho = (_this.width / _this.dientes.length) / 3;
+                var mitad_ancho = ancho / 2;
+                var alto_punto = mitad_h / 40;
                 context.stroke();
                 context.beginPath();
                 context.lineWidth = 2;
                 context.strokeStyle = '#0138FF';
-                let x = this.x;
-                let ps_h = 0;
-                let puntos_ps = 0;
-                for (let r = 0; r < this.dientes.length; r++) {
-                    let diente = this.dientes[r];
-                    let ps = diente.getProfundidadSondaje();
-                    let mg = diente.getMargenGenginval();
-                    for (let p = 0; p < ps.length; p++) {
+                var x = _this.x;
+                var ps_h = 0;
+                var puntos_ps = 0;
+                for (var r = 0; r < _this.dientes.length; r++) {
+                    var diente = _this.dientes[r];
+                    var ps = diente.getProfundidadSondaje();
+                    var mg = diente.getMargenGenginval();
+                    for (var p = 0; p < ps.length; p++) {
                         puntos_ps = mg[p] - ps[p];
                         ps_h = alto_punto * puntos_ps * (posicion == Posicion.Superior ? 1 : -1);
                         if (r == 0 && p == 0) {
@@ -601,12 +728,12 @@ class Area extends Rectangle {
                 context.beginPath();
                 context.lineWidth = 2;
                 context.strokeStyle = '#FF0000';
-                let mg_h = 0;
-                x = this.x;
-                for (let r = 0; r < this.dientes.length; r++) {
-                    let diente = this.dientes[r];
-                    let mg = diente.getMargenGenginval();
-                    for (let m = 0; m < mg.length; m++) {
+                var mg_h = 0;
+                x = _this.x;
+                for (var r = 0; r < _this.dientes.length; r++) {
+                    var diente = _this.dientes[r];
+                    var mg = diente.getMargenGenginval();
+                    for (var m = 0; m < mg.length; m++) {
                         mg_h = alto_punto * mg[m] * (posicion == Posicion.Superior ? 1 : -1);
                         if (r == 0 && m == 0) {
                             x += mitad_ancho;
@@ -625,138 +752,138 @@ class Area extends Rectangle {
             context.rect(this.x, this.y, this.width, this.height);
             context.stroke();
         }
-    }
-    generarFilaPiezaHTML(tabla) {
-        let trA = document.createElement('TR');
-        let nombre = document.createElement('TH');
+    };
+    Area.prototype.generarFilaPiezaHTML = function (tabla) {
+        var trA = document.createElement('TR');
+        var nombre = document.createElement('TH');
         nombre.innerHTML = "Pieza";
         nombre.setAttribute("class", "filaNombre");
         nombre.setAttribute("class", "colinput");
         trA.appendChild(nombre);
         tabla.appendChild(trA);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
-            let th = document.createElement('TH');
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
+            var th = document.createElement('TH');
             th.setAttribute("colspan", "3");
             th.setAttribute("class", "colinput");
             th.innerHTML = diente.numero.toString();
             trA.appendChild(th);
         }
-    }
-    generarFilaAusenteHTML(tabla) {
-        let fila = document.createElement('TR');
-        let ausente = document.createElement('TH');
+    };
+    Area.prototype.generarFilaAusenteHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var ausente = document.createElement('TH');
         ausente.setAttribute("class", "filaNombre");
         ausente.innerHTML = "Ausente";
         fila.appendChild(ausente);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarAusenteHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaMovilidadHTML(tabla) {
-        let fila = document.createElement('TR');
-        let movilidad = document.createElement('TH');
+    };
+    Area.prototype.generarFilaMovilidadHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var movilidad = document.createElement('TH');
         movilidad.setAttribute("class", "filaNombre");
         movilidad.innerHTML = "Movilidad";
         fila.appendChild(movilidad);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarMovilidadHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaFaltaEQHTML(tabla) {
-        let fila = document.createElement('TR');
-        let faltaEQ = document.createElement('TH');
+    };
+    Area.prototype.generarFilaFaltaEQHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var faltaEQ = document.createElement('TH');
         faltaEQ.innerHTML = "FaltaEQ (*)";
         faltaEQ.setAttribute("class", "filaNombre");
         fila.appendChild(faltaEQ);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarFaltaEQHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaFurcaClaseHTML(tabla) {
-        let fila = document.createElement('TR');
-        let furca_clase = document.createElement('TH');
+    };
+    Area.prototype.generarFilaFurcaClaseHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var furca_clase = document.createElement('TH');
         furca_clase.innerHTML = "Furca (Clase)";
         furca_clase.setAttribute("class", "filaNombre");
         fila.appendChild(furca_clase);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarFurcaClaseHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaFurcaMMHTML(tabla) {
-        let fila = document.createElement('TR');
-        let furca_mm = document.createElement('TH');
+    };
+    Area.prototype.generarFilaFurcaMMHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var furca_mm = document.createElement('TH');
         furca_mm.innerHTML = "Furca (mm)";
         furca_mm.setAttribute("class", "filaNombre");
         fila.appendChild(furca_mm);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarFurcaMMHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaSupuracionHTML(tabla) {
-        let fila = document.createElement('TR');
-        let supuracion = document.createElement('TH');
+    };
+    Area.prototype.generarFilaSupuracionHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var supuracion = document.createElement('TH');
         supuracion.innerHTML = "Supuracion";
         supuracion.setAttribute("class", "filaNombre");
         fila.appendChild(supuracion);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarSupuracionHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaNicHTML(tabla) {
-        let fila = document.createElement('TR');
-        let nic = document.createElement('TH');
+    };
+    Area.prototype.generarFilaNicHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var nic = document.createElement('TH');
         nic.innerHTML = "NIC";
         nic.setAttribute("class", "filaNombre");
         fila.appendChild(nic);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarNicHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaPsHTML(tabla) {
-        let fila = document.createElement('TR');
-        let ps = document.createElement('TH');
+    };
+    Area.prototype.generarFilaPsHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var ps = document.createElement('TH');
         ps.innerHTML = "PS";
         ps.setAttribute("class", "filaNombre");
         fila.appendChild(ps);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarPsHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarFilaUCAHTML(tabla) {
-        let fila = document.createElement('TR');
-        let uca_mg = document.createElement('TH');
+    };
+    Area.prototype.generarFilaUCAHTML = function (tabla) {
+        var fila = document.createElement('TR');
+        var uca_mg = document.createElement('TH');
         uca_mg.innerHTML = "UCA-MG";
         uca_mg.setAttribute("class", "filaNombre");
         fila.appendChild(uca_mg);
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.generarUcaMGHTML(fila);
         }
         tabla.appendChild(fila);
-    }
-    generarHTML(htmlId) {
-        let html = document.getElementById(htmlId);
+    };
+    Area.prototype.generarHTML = function (htmlId) {
+        var html = document.getElementById(htmlId);
         while (html.firstChild)
             html.removeChild(html.firstChild);
-        let form = document.createElement("FORM");
-        let tabla = document.createElement("table");
+        var form = document.createElement("FORM");
+        var tabla = document.createElement("table");
         tabla.id = "periodontoTABLE";
         if (this.dientes[0].posicion == Posicion.Superior) {
             this.generarFilaPiezaHTML(tabla);
@@ -785,64 +912,44 @@ class Area extends Rectangle {
         form.appendChild(tabla);
         // Append the table to the body
         html.appendChild(form);
-    }
-    setValuesFromTableHtml() {
-        for (let d = 0; d < this.dientes.length; d++) {
-            let diente = this.dientes[d];
+    };
+    Area.prototype.setValuesFromTableHtml = function () {
+        for (var d = 0; d < this.dientes.length; d++) {
+            var diente = this.dientes[d];
             diente.datos.setValueFromTableHtml();
             diente.ausente = diente.datos.ausente;
             diente.updateValues();
         }
+    };
+    return Area;
+}(Rectangle));
+var Titulo = /** @class */ (function (_super) {
+    __extends(Titulo, _super);
+    function Titulo(x, y, width, height) {
+        var _this = _super.call(this, x, y, width, height) || this;
+        _this.debug = true;
+        _this.invertido = false;
+        _this.captions = ["Pieza", "Movilidad", "FaltaEQ", "furcaClase", "furcaMM", "Supuracion", "Nic", "Ps", "UCA-MG"];
+        return _this;
     }
-}
-class Titulo extends Rectangle {
-    constructor(x, y, width, height) {
-        super(x, y, width, height);
-        this.debug = true;
-        this.invertido = false;
-        this.captions = ["Pieza", "Movilidad", "FaltaEQ", "furcaClase", "furcaMM", "Supuracion", "Nic", "Ps", "UCA-MG"];
-    }
-    drawTextInBox(context, txt, font, x, y, w, h) {
-        let fontHeight = 14;
+    Titulo.prototype.drawTextInBox = function (context, txt, font, x, y, w, h) {
+        var fontHeight = 14;
         context.font = fontHeight + 'px ' + font;
         context.fillText(txt, x / 2, y + 2);
-    }
-    redraw(context) {
-        let alto = this.height / this.captions.length;
-        for (let d = 0; d < this.captions.length; d++) {
-            let caption = this.captions[this.invertido ? this.captions.length - d - 1 : d];
+    };
+    Titulo.prototype.redraw = function (context) {
+        var alto = this.height / this.captions.length;
+        for (var d = 0; d < this.captions.length; d++) {
+            var caption = this.captions[this.invertido ? this.captions.length - d - 1 : d];
             this.drawTextInBox(context, caption, "Arial", this.x + 2, this.y + (alto * d), this.width, alto);
         }
-    }
-}
-class PeriodontogramaApp {
-    constructor() {
+    };
+    return Titulo;
+}(Rectangle));
+var PeriodontogramaApp = /** @class */ (function () {
+    function PeriodontogramaApp() {
         this.debug = true;
-        this.pressEventHandler = (e) => {
-            let mouseX = e.changedTouches ?
-                e.changedTouches[0].pageX :
-                e.pageX;
-            let mouseY = e.changedTouches ?
-                e.changedTouches[0].pageY :
-                e.pageY;
-            mouseX -= this.canvas.offsetLeft;
-            mouseY -= this.canvas.offsetTop;
-            if (this.debug) {
-                for (let r = 0; r < this.areas.length; r++) {
-                    let area = this.areas[r];
-                    if (area.contains(mouseX, mouseY)) {
-                        this.canvas.dispatchEvent(new CustomEvent("clickArea", {
-                            detail: { area: r }
-                        }));
-                    }
-                    this.context.beginPath();
-                    this.context.rect(area.x, area.y, area.width, area.height);
-                    this.context.stroke();
-                }
-            }
-            this.redraw();
-        };
-        let canvas = document.getElementById('canvas');
+        var canvas = document.getElementById('canvas');
         this.context = canvas.getContext("2d");
         this.canvas = canvas;
         this.areas = [];
@@ -850,37 +957,36 @@ class PeriodontogramaApp {
         this.calcularArea();
         this.configurarAreas();
         this.redraw();
-        this.createUserEvents();
     }
-    calcularArea() {
-        let ancho_titulo = this.canvas.width / 8;
-        let ancho_espacio = 20;
-        let ancho_area = (this.canvas.width - ancho_titulo - (ancho_espacio * 2)) / 3;
-        let alto_espacio = 20;
-        let alto_area = (this.canvas.height - alto_espacio) / 4;
-        let mitad_alto = alto_area / 2;
-        for (let h = 0; h < 4; h++) {
-            let espacio_x = 0;
-            let espacio_y = h >= 2 ? alto_espacio : 0;
-            for (let w = 0; w < 3; w++) {
+    PeriodontogramaApp.prototype.calcularArea = function () {
+        var ancho_titulo = this.canvas.width / 8;
+        var ancho_espacio = 20;
+        var ancho_area = (this.canvas.width - ancho_titulo - (ancho_espacio * 2)) / 3;
+        var alto_espacio = 20;
+        var alto_area = (this.canvas.height - alto_espacio) / 4;
+        var mitad_alto = alto_area / 2;
+        for (var h = 0; h < 4; h++) {
+            var espacio_x = 0;
+            var espacio_y = h >= 2 ? alto_espacio : 0;
+            for (var w = 0; w < 3; w++) {
                 if (w == 1 || w == 2)
                     espacio_x = ancho_espacio;
-                let area = new Area(ancho_titulo + (espacio_x * w) + (ancho_area * w), (espacio_y) + alto_area * h, ancho_area, alto_area);
+                var area = new Area(h, ancho_titulo + (espacio_x * w) + (ancho_area * w), (espacio_y) + alto_area * h, ancho_area, alto_area);
                 this.areas.push(area);
             }
-            let y = 0;
-            for (let h = 0; h < 4; h++) {
-                let espacio_y = h == 2 ? alto_espacio : 0;
-                let titulo = new Titulo(5, y + espacio_y, ancho_titulo, mitad_alto);
-                y += mitad_alto + (h % 2 == 0 ? alto_area + espacio_y : 0);
-                titulo.invertido = h % 2 != 0;
+            var y = 0;
+            for (var h_1 = 0; h_1 < 4; h_1++) {
+                var espacio_y_1 = h_1 == 2 ? alto_espacio : 0;
+                var titulo = new Titulo(5, y + espacio_y_1, ancho_titulo, mitad_alto);
+                y += mitad_alto + (h_1 % 2 == 0 ? alto_area + espacio_y_1 : 0);
+                titulo.invertido = h_1 % 2 != 0;
                 this.titulos.push(titulo);
             }
         }
-    }
-    configurarAreas() {
+    };
+    PeriodontogramaApp.prototype.configurarAreas = function () {
         //Area Superior izqauierda
-        let index = 0;
+        var index = 0;
         this.areas[index].dientes.push(new Diente(18, Posicion.Superior));
         this.areas[index].dientes.push(new Diente(17, Posicion.Superior));
         this.areas[index].dientes.push(new Diente(16, Posicion.Superior));
@@ -971,26 +1077,61 @@ class PeriodontogramaApp {
         this.areas[index].dientes.push(new Diente(37, Posicion.Inferior));
         this.areas[index].dientes.push(new Diente(38, Posicion.Inferior));
         this.areas[index].calcularSecciones();
-    }
-    createUserEvents() {
-        let canvas = this.canvas;
-        canvas.addEventListener("mousedown", this.pressEventHandler);
-    }
-    redraw() {
+    };
+    PeriodontogramaApp.prototype.clic = function (mouseX, mouseY) {
+        var redraw = false;
+        for (var r = 0; r < this.areas.length; r++) {
+            var area = this.areas[r];
+            if (area.contains(mouseX, mouseY)) {
+                redraw = true;
+                this.canvas.dispatchEvent(new CustomEvent("clickArea", {
+                    detail: { area: r }
+                }));
+            }
+            // this.context.beginPath();
+            // this.context.rect(area.x, area.y, area.width, area.height);
+            // this.context.stroke();                
+        }
+        if (redraw)
+            this.redraw();
+    };
+    PeriodontogramaApp.prototype.getValores = function () {
+        var valores = '[';
+        for (var a = 0; a < this.areas.length; a++) {
+            var area = this.areas[a];
+            if (valores.length > 1)
+                valores += ",";
+            valores += area.getValores();
+        }
+        valores += "]";
+        return valores;
+    };
+    PeriodontogramaApp.prototype.setValores = function (json) {
+        var objs = JSON.parse(json);
+        for (var a = 0; a < this.areas.length; a++) {
+            var area = this.areas[a];
+            area.setValores(objs);
+        }
+        this.redraw();
+    };
+    PeriodontogramaApp.prototype.redraw = function () {
         if (this.debug) {
             this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.fillStyle = "white";
+            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
             // this.context.beginPath();
             // this.context.rect(0, 0, this.canvas.width, this.canvas.height);
             // this.context.stroke();    
-            for (let r = 0; r < this.areas.length; r++) {
-                let area = this.areas[r];
+            for (var r = 0; r < this.areas.length; r++) {
+                var area = this.areas[r];
                 area.redraw(this.context);
             }
-            for (let r = 0; r < this.titulos.length; r++) {
-                let titulo = this.titulos[r];
+            for (var r = 0; r < this.titulos.length; r++) {
+                var titulo = this.titulos[r];
                 titulo.redraw(this.context);
             }
         }
-    }
-}
+    };
+    return PeriodontogramaApp;
+}());
 var perioApp = new PeriodontogramaApp();
